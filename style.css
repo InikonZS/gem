@@ -1,0 +1,41 @@
+.game_wrapper{
+    display:block;
+}
+
+.panel{
+    display:flex;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.field_panel{
+    display:flex;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.output{
+    border-style: solid;
+    border-width: 1px;
+    float: left;
+    margin:10px;
+    width:30px;
+}
+
+.button {
+    border-style: solid;
+    border-width: 1px;
+    float: left;
+    margin:10px;
+    width:50px;
+}
+
+.brick{
+    border-style: solid;
+    border-width: 1px;
+}
+
+.field{
+    display: flex;
+    padding:10px;
+}
