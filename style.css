@@ -4,35 +4,59 @@
 
 .panel{
     display:flex;
-    border-style: solid;
-    border-width: 1px;
+    border-radius: 6px;
+    background-color: #8F44B6;
+    margin-bottom: 10px;
+    justify-content: center;
+    align-items: center;
 }
 
 .field_panel{
     display:flex;
-    border-style: solid;
-    border-width: 1px;
+    border-radius: 6px;
+    background-color: #8F44B6;
 }
 
 .output{
     border-style: solid;
     border-width: 1px;
-    float: left;
-    margin:10px;
-    width:30px;
+    margin: 10px;
+    width: 50px;
+    background-color: #fff;
+    border-radius: 6px;
+    height: 27px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .button {
     border-style: solid;
     border-width: 1px;
-    float: left;
-    margin:10px;
-    width:50px;
+    background-image: linear-gradient(45deg, #80a, #f9f);
+    margin: 10px;
+    width: 50px;
+    background-color: #fff;
+    border-radius: 6px;
+    height: 27px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .brick{
-    border-style: solid;
-    border-width: 1px;
+    border-radius: 5px;
+    background-image: linear-gradient(45deg, #80a, #f9f);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-family: arial;
+    width:50px;
+    height:50px;
+    font-weight: 600;
+    color: #fff;
+    user-select: none;
 }
 
 .field{

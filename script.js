@@ -27,9 +27,21 @@ class GemApplication {
     }
     
     reset (size){
-        for (let i=0;i<100;i++){
+      /*  let shufle=(iter)=>{
+            if (iter<100){
+                //console.log(iter);
+                let nearList = getNearList(this.field.bricks, this.field.empty.posX, this.field.empty.posY);
+                let brick;
+                brick = nearList[Math.trunc(Math.abs(Math.random()*nearList.length))];
+                this.field.move(brick); 
+                brick.node.ontransitionend = ()=>{brick.node.ontransitionend="";shufle(iter+1)};
+                
+            }   
+        }*/
+        //shufle(0);
+        for (let i=0;i<10000;i++){
             let brick=this.field.bricks[Math.trunc(Math.random()*this.field.bricks.length)];
-            this.field.move(brick);
+            this.field.move(brick); 
         }
         this.size = size;
         this.moves = 0;
@@ -119,7 +131,6 @@ class Brick {
         this.node.classList.add('brick');
         this.value = value;
         this.setPosition(posX, posY);
-
         this.node.addEventListener('click',()=>{
             field.onBrickClick(this);
         });
@@ -129,6 +140,8 @@ class Brick {
     setPosition (posX, posY){
         this.posX = posX;
         this.posY = posY;
+        //app.field.bricks[4].node.getBoundingClientRect()
+        //let rect=this.node.getBoundingClientRect();
         let blockSize = 50;
         let style = `
             transition-property: left top; 
@@ -136,9 +149,11 @@ class Brick {
             position: absolute; 
             left: ${posX * (blockSize + 10)}px; 
             top: ${posY * (blockSize + 10)}px; 
-            width: ${blockSize}px; 
-            height: ${blockSize}px;
         `;
+        //transform: translateX(${posX * (rect.width + 10)}px) translateY(${posY * (rect.height + 10)}px);
+       
+       // width: ${blockSize}px; 
+       //    height: ${blockSize}px;
         this.node.style = style;
     }
 
@@ -147,6 +162,38 @@ class Brick {
     }
 }
 
+/*window.addEventListener('resize',(event)=>{
+    let scx=document.documentElement.clientWidth/230;
+    let scy=document.documentElement.clientHeight/mainNode.clientHeight;
+    mainNode.style=`
+        transform: scale(${Math.min(scx,scy)});
+    `;
+});*/
+
+document.addEventListener('keydown',(event)=>{
+    let epx=app.field.empty.posX;
+    let epy=app.field.empty.posY;
+    let nearList=getNearList(app.field.bricks, epx, epy);
+    var ci;
+    switch (event.code){
+        case "ArrowUp": 
+            ci = nearList.filter((it)=>it.posY - epy==1)[0];
+            if (ci) (app.field.onBrickClick(ci));
+        break;
+        case "ArrowDown": 
+            ci = nearList.filter((it)=>it.posY - epy==-1)[0];
+            if (ci) (app.field.onBrickClick(ci));
+        break;
+        case "ArrowLeft": 
+            ci = nearList.filter((it)=>it.posX - epx==1)[0];
+            if (ci) (app.field.onBrickClick(ci));
+        break;
+        case "ArrowRight": 
+            ci = nearList.filter((it)=>it.posX - epx==-1)[0];
+            if (ci) (app.field.onBrickClick(ci));
+        break;      
+    }
+});
 
 //math 
 function isNearEmpty(ex, ey, x, y){
@@ -156,9 +203,10 @@ function isNearEmpty(ex, ey, x, y){
     return (!sx ^ !sy) && !ortho;
 }
 
-function isWinCombination(bricks){
-    
+function getNearList(bricks, ex, ey){
+    return bricks.filter((it)=>isNearEmpty(it.posX, it.posY, ex, ey));
 }
+
 
 //start point
 const mainNode = document.querySelector('.game_wrapper');
