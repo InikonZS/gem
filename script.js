@@ -3,8 +3,8 @@
 class GemApplication {
     constructor (parentNode, size) {
         var startButton_onClick = ()=>{
-            this.autoscale();
-            this.reset();
+           // this.autoscale();
+            this.reset(this.size||4);
             this.timeIndicator.restart();
         }
         this.size = size;
@@ -21,7 +21,7 @@ class GemApplication {
         this.winIndicator = new Control ('output', 0);
         //this.panel.node.appendChild( this.winIndicator.node );
         ///modal
-        this.menu = new Control ('menu', 'Click To Start', ()=>{
+        this.menu = new Control ('menu', `Game of 15\n Use mouse or arrow keys\n Click To Start`, ()=>{
             this.menu.node.style='height:0px;'; 
             startButton_onClick();
         });
@@ -56,13 +56,34 @@ class GemApplication {
         this.movIndicator = new Control ('output', 0);
         this.panel.node.appendChild( this.movIndicator.node );
 
-        this.startButton = new Control ('button', 'start', startButton_onClick);
+        this.minusButton = new Control ('button', '-', ()=>{
+            if (this.size>3) {
+                
+                this.reset((this.size-1)||4);
+                this.timeIndicator.restart();
+            }
+        });
+        this.minusButton.node.style='width:20px;'
+        this.panel.node.appendChild( this.minusButton.node);
+
+        this.startButton = new Control ('button', 'restart', startButton_onClick);
         this.panel.node.appendChild( this.startButton.node );
+
+        this.plusButton = new Control ('button', '+', ()=>{
+            if (this.size<9) {
+                
+                this.reset((this.size+1)||4);
+                this.timeIndicator.restart();
+            }
+        });
+        this.plusButton.node.style='width:20px;'
+        this.panel.node.appendChild( this.plusButton.node);
+
         this.node.appendChild( this.panel.node );
         this.fieldPanel.node.appendChild( this.field.node );
         this.node.appendChild( this.fieldPanel.node );
-        this.autoscale();
-        this.reset();
+        //this.autoscale();
+        this.reset(4);
     }
     autoscale(){
         let scx=document.documentElement.clientWidth/mainNode.clientWidth;
@@ -83,15 +104,29 @@ class GemApplication {
                 
             }   
         }*/
-        //shufle(0);
-        for (let i=0;i<3;i++){
+        //shufle(0); 
+        if (size!==this.size) {
+            this.size = size;
+            this.field.destroy();
+            this.panel.node.style = `padding:10px; width:${this.size*(50+10)-10}px;`;
+            this.field = new Field (this, this.size);
+            this.fieldPanel.node.appendChild( this.field.node );
+            this.fieldPanel.node.style = `
+                padding:10px; width:${this.size*(50+10)-10}px; 
+                height:${this.size*(50+10)-10}px;
+            `;
+        }
+        for (let i=0;i<30000;i++){
             let brick=this.field.bricks[Math.trunc(Math.random()*this.field.bricks.length)];
             this.field.move(brick); 
         }
-        this.size = size;
+        
         this.moves = 0;
+        this.timeIndicator.restart();
         this.winIndicator.setValue(this.field.isWin());
         this.movIndicator.setValue(this.moves);
+        this.autoscale();
+       
     }
     onFieldMove (){
         this.moves++;
@@ -152,7 +187,13 @@ class Field {
             }
         }
     }
-    
+    destroy(){
+        this.bricks.forEach((it)=>it.destroy());
+        //this.bricks=[];
+        //this.empty=undefined;
+        this.node.remove();
+    }
+
     move (brick){
         if (isNearEmpty(brick.posX, brick.posY, this.empty.posX, this.empty.posY)){
             let bufX = brick.posX;
@@ -180,23 +221,50 @@ class Brick {
         this.node.innerText = caption.toString();
         this.node.classList.add('brick');
         this.value = value;
+        //this.sz=sz;
         this.setPosition(posX, posY);
-        this.node.addEventListener('click',()=>{
-            field.onBrickClick(this);
+        this.field=field;
+        this.clickHandler = ()=>{
+            this.field.onBrickClick(this);
+        }
+        this.node.addEventListener('click', this.clickHandler);
+       
+        /*
+        this.node.addEventListener('mouseup', (e)=>{this.clx=undefined;
+            let style = `
+            left: ${this.posX * (blockSize + 10)+ +this.clo}px; 
+            top: ${this.posY * (blockSize + 10)}px; 
+            z-index:1;
+        `;
+        this.node.style = style;
         });
+        this.node.addEventListener('mousedown', (e)=>{this.clx=e.pageX-this.node.offsetLeft;});
+        this.node.addEventListener('mousemove', (e)=>{
+            if (this.clx!==undefined){
+                this.clo=e.pageX-this.node.offsetLeft-this.clx;
+                let blockSize = (50);
+            let style = `
+                left: ${this.posX * (blockSize + 10)+ +this.clo}px; 
+                top: ${this.posY * (blockSize + 10)}px; 
+                z-index:100;
+            `;
+            this.node.style = style;
+            }
+        });
+        */
 
     }
-    
+    destroy(){
+        this.node.removeEventListener('click',this.clickHandler);
+        this.node.remove(); 
+    }
     setPosition (posX, posY){
         this.posX = posX;
         this.posY = posY;
         //app.field.bricks[4].node.getBoundingClientRect()
         //let rect=this.node.getBoundingClientRect();
-        let blockSize = 50;
+        let blockSize = (50);
         let style = `
-            transition-property: left top; 
-            transition-duration: 200ms; 
-            position: absolute; 
             left: ${posX * (blockSize + 10)}px; 
             top: ${posY * (blockSize + 10)}px; 
         `;
