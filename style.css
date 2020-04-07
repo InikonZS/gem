@@ -1,5 +1,18 @@
+
+body{
+    padding:0px;
+    margin:0px;
+}
+.game{
+    display: flex;
+    justify-content: center;
+
+}
 .game_wrapper{
-    display:block;
+    display: flex;
+    flex-direction: column;
+    word-break: break-word;
+    transform-origin: top center 0px;
 }
 
 .panel{
@@ -20,7 +33,7 @@
 .output{
     border-style: solid;
     border-width: 1px;
-    margin: 10px;
+    margin: 3px;
     width: 50px;
     background-color: #fff;
     border-radius: 6px;
@@ -28,6 +41,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 9pt;
 }
 
 .button {
@@ -42,6 +56,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+    user-select: none;
 }
 
 .brick{
@@ -62,4 +78,23 @@
 .field{
     display: flex;
     padding:10px;
+}
+
+.menu{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition-duration:1000ms;
+    position: absolute;
+    border-radius: 6px;
+    background-color: rgb(89, 68, 182);
+    width: 250px;
+    height: 328px;
+    box-sizing: border-box;
+    z-index: 10;
+    padding: 0px 10px;
+    overflow: hidden;
+    word-break: break-word;
+    text-align: center;
 }

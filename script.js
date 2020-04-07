@@ -3,7 +3,9 @@
 class GemApplication {
     constructor (parentNode, size) {
         var startButton_onClick = ()=>{
+            this.autoscale();
             this.reset();
+            this.timeIndicator.restart();
         }
         this.size = size;
         this.node = parentNode;
@@ -12,20 +14,63 @@ class GemApplication {
         this.panel = new Control ('panel', '');
         this.panel.node.style = `padding:10px; width:${this.size*(50+10)-10}px;`;
         this.fieldPanel = new Control ('field_panel', '');
-        this.fieldPanel.node.style = `padding:10px; width:${this.size*(50+10)-10}px; height:${this.size*(50+10)-10}px;`;
+        this.fieldPanel.node.style = `
+            padding:10px; width:${this.size*(50+10)-10}px; 
+            height:${this.size*(50+10)-10}px;
+        `;
         this.winIndicator = new Control ('output', 0);
+        //this.panel.node.appendChild( this.winIndicator.node );
+        ///modal
+        this.menu = new Control ('menu', 'Click To Start', ()=>{
+            this.menu.node.style='height:0px;'; 
+            startButton_onClick();
+        });
+        this.menu.show = (msg)=>{
+            this.menu.node.innerText=msg;
+            this.menu.node.style='';     
+        }
+        this.node.appendChild( this.menu.node );
+        ///timer
+        this.timeIndicator = new Control ('output', 0);
+        this.timeIndicator.stop = ()=>{
+            window.clearInterval(this.intervalID);
+            this.timeIndicator.refresh();
+            let dt = new  Date(Date.now()-this.timeIndicator.startTime);
+            return dt.getUTCHours()*60+dt.getUTCMinutes()+ " minutes " +dt.getUTCSeconds()+" seconds.";
+        }
+        this.timeIndicator.restart = ()=>{
+            this.timeIndicator.startTime = Date.now();
+            this.intervalID = window.setInterval(()=>(this.timeIndicator.refresh()), 500);
+            this.timeIndicator.refresh();
+        }
+        this.timeIndicator.refresh = ()=>{
+            let dt = new  Date(Date.now()-this.timeIndicator.startTime);
+            this.timeIndicator.node.innerText = 
+                dt.getUTCHours()*60+dt.getUTCMinutes()+ 
+                " : " +dt.getUTCSeconds();
+        }
+        this.panel.node.appendChild( this.timeIndicator.node );
+        this.timeIndicator.restart();
+        /////
+
         this.movIndicator = new Control ('output', 0);
-        this.startButton = new Control ('button', 'start', startButton_onClick);
-        this.panel.node.appendChild( this.winIndicator.node );
         this.panel.node.appendChild( this.movIndicator.node );
+
+        this.startButton = new Control ('button', 'start', startButton_onClick);
         this.panel.node.appendChild( this.startButton.node );
         this.node.appendChild( this.panel.node );
         this.fieldPanel.node.appendChild( this.field.node );
         this.node.appendChild( this.fieldPanel.node );
-
+        this.autoscale();
         this.reset();
     }
-    
+    autoscale(){
+        let scx=document.documentElement.clientWidth/mainNode.clientWidth;
+        let scy=document.documentElement.clientHeight/mainNode.clientHeight;
+        this.node.style=`
+            transform: scale(${Math.min(scx,scy)});
+        `;
+    }
     reset (size){
       /*  let shufle=(iter)=>{
             if (iter<100){
@@ -39,7 +84,7 @@ class GemApplication {
             }   
         }*/
         //shufle(0);
-        for (let i=0;i<10000;i++){
+        for (let i=0;i<3;i++){
             let brick=this.field.bricks[Math.trunc(Math.random()*this.field.bricks.length)];
             this.field.move(brick); 
         }
@@ -49,9 +94,14 @@ class GemApplication {
         this.movIndicator.setValue(this.moves);
     }
     onFieldMove (){
-        this.winIndicator.setValue(this.field.isWin());
         this.moves++;
         this.movIndicator.setValue(this.moves);
+        if (this.field.isWin()){
+            this.winIndicator.setValue(this.field.isWin());
+            let tm = this.timeIndicator.stop();
+            this.menu.show(`You are Win in ${this.moves} moves. \n You time ${tm} \n Click here to play again`);
+        }
+        
     }
 }
 
@@ -162,13 +212,13 @@ class Brick {
     }
 }
 
-/*window.addEventListener('resize',(event)=>{
-    let scx=document.documentElement.clientWidth/230;
+window.addEventListener('resize',(event)=>{
+    let scx=document.documentElement.clientWidth/mainNode.clientWidth;
     let scy=document.documentElement.clientHeight/mainNode.clientHeight;
     mainNode.style=`
         transform: scale(${Math.min(scx,scy)});
     `;
-});*/
+});
 
 document.addEventListener('keydown',(event)=>{
     let epx=app.field.empty.posX;
