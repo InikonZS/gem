@@ -41,7 +41,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 9pt;
+    font-size: 8pt;
 }
 
 .button {
@@ -54,7 +54,7 @@ body{
     border-radius: 6px;
     height: 27px;
     display: flex;
-    font-size: 9pt;
+    font-size: 8pt;
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -101,4 +101,7 @@ body{
     overflow: hidden;
     word-break: break-word;
     text-align: center;
+}
+.exp{
+    background-color: rgb(163, 68, 182);
 }

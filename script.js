@@ -30,6 +30,43 @@ class GemApplication {
             this.menu.node.style='';     
         }
         this.node.appendChild( this.menu.node );
+
+        ///extended menu
+        this.exmenu = new Control ('menu exp', '', ()=>{
+            this.exmenu.hide(); 
+        });
+        this.exmenu.show = ()=>{
+            //this.exmenu.node.innerText=msg;
+            this.exmenu.node.style='';     
+        }
+        this.exmenu.hide = ()=>{
+            this.exmenu.node.style='height:0px;';     
+        }
+        this.exmenu.hide();
+        this.node.appendChild( this.exmenu.node );
+
+        this.saveButton = new Control ('button', 'save', ()=>{
+            console.log('saving dont work');
+            
+        });
+        this.saveButton.node.style='width:100%;'
+        this.exmenu.node.appendChild( this.saveButton.node);
+
+        this.loadButton = new Control ('button', 'load', ()=>{
+            console.log('loading dont work');
+            
+        });
+        this.loadButton.node.style='width:100%;'
+        this.exmenu.node.appendChild( this.loadButton.node);
+
+        ///
+        this.menButton = new Control ('button', '=', ()=>{
+            this.exmenu.show();
+        });
+        this.menButton.node.style='width:20px;'
+        this.panel.node.appendChild( this.menButton.node);
+
+
         ///timer
         this.timeIndicator = new Control ('output', 0);
         this.timeIndicator.stop = ()=>{
@@ -70,7 +107,7 @@ class GemApplication {
         this.panel.node.appendChild( this.startButton.node );
 
         this.plusButton = new Control ('button', '+', ()=>{
-            if (this.size<9) {
+            if (this.size<7) {
                 
                 this.reset((this.size+1)||4);
                 this.timeIndicator.restart();
@@ -88,6 +125,8 @@ class GemApplication {
     autoscale(){
         let scx=document.documentElement.clientWidth/mainNode.clientWidth;
         let scy=document.documentElement.clientHeight/mainNode.clientHeight;
+        this.scale=Math.min(scx,scy);
+        //console.log(this.scale);
         this.node.style=`
             transform: scale(${Math.min(scx,scy)});
         `;
@@ -145,11 +184,13 @@ class Control {
         this.node = document.createElement('div');
         this.node.id = "";
         this.node.innerText = value.toString();
-        this.node.classList.add(className);
+        //this.node.classList.add(className);
+        this.node.className=className;
         this.value = value;
         if (onClick) {
-            this.node.addEventListener('click',()=>{
+            this.node.addEventListener('click',(e)=>{
                 onClick();   
+                e.stopPropagation();
             });
         }
 
@@ -229,8 +270,9 @@ class Brick {
         }
         this.node.addEventListener('click', this.clickHandler);
        
-        /*
+       /* 
         this.node.addEventListener('mouseup', (e)=>{this.clx=undefined;
+            let blockSize = (50);
             let style = `
             left: ${this.posX * (blockSize + 10)+ +this.clo}px; 
             top: ${this.posY * (blockSize + 10)}px; 
@@ -244,7 +286,7 @@ class Brick {
                 this.clo=e.pageX-this.node.offsetLeft-this.clx;
                 let blockSize = (50);
             let style = `
-                left: ${this.posX * (blockSize + 10)+ +this.clo}px; 
+                left: ${this.posX * (blockSize + 10)+ (+this.clo)/app.scale}px; 
                 top: ${this.posY * (blockSize + 10)}px; 
                 z-index:100;
             `;
@@ -281,11 +323,12 @@ class Brick {
 }
 
 window.addEventListener('resize',(event)=>{
-    let scx=document.documentElement.clientWidth/mainNode.clientWidth;
-    let scy=document.documentElement.clientHeight/mainNode.clientHeight;
-    mainNode.style=`
-        transform: scale(${Math.min(scx,scy)});
-    `;
+   // let scx=document.documentElement.clientWidth/mainNode.clientWidth;
+   // let scy=document.documentElement.clientHeight/mainNode.clientHeight;
+   // mainNode.style=`
+   //     transform: scale(${Math.min(scx,scy)});
+   // `;
+   app.autoscale();
 });
 
 document.addEventListener('keydown',(event)=>{
@@ -329,3 +372,4 @@ function getNearList(bricks, ex, ey){
 //start point
 const mainNode = document.querySelector('.game_wrapper');
 const app = new GemApplication (mainNode, 4);
+app.autoscale();
